@@ -1,0 +1,35 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: person-api
+  namespace: production
+spec:
+  selector:
+    matchLabels:
+      app: person-api
+  replicas: 1 # tells deployment to run 1 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: person-api
+    spec:
+      enableServiceLinks: false
+      containers:
+      - name: person-api
+        image: 603024125524.dkr.ecr.us-east-1.amazonaws.com/person-api
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: person-api
+  namespace: production
+spec:
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  selector:
+    app: person-api
